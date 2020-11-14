@@ -1,42 +1,7 @@
 version: 2.1
-
-parameters:
-  browser:
-    type: string
-    default: none # prevent running after pushing or merging. For running need to use api request with necessary parameters
-
+orbs:
+  node: circleci/node@3.0.0
 workflows:
-  version: 2
-  run-all-tests:
-    when:
-      and:
-        - equal: [ all, << pipeline.parameters.browser >> ]
+  node-tests:
     jobs:
-      - run-chrome-tests:
-          context: messenger-end-to-end
-
-  run-only-chrome:
-    when:
-      and:
-        - equal: [ chrome, << pipeline.parameters.browser >> ]
-    jobs:
-      - run-chrome-tests:
-          context: messenger-end-to-end
-
-jobs:
-  run-chrome-tests:
-    docker:
-      - image: atlassianlabs/docker-node-jdk-chrome-firefox
-    steps:
-      - checkout
-      - run:
-          command: |
-            npm install
-            npm i cross-env -g
-            npm install -g allure-commandline
-            npm run tests
-          environment:
-            BROWSER_NAME: Chrome
-          name: "Run chrome tests"
-      - store_artifacts:
-          path: ~/project/artifacts
+      - node/test
